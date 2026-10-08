@@ -21,6 +21,9 @@ class Config:
     refresh_min: int = 30
     model: str = "gemma4:e2b-it-qat"
     model_timeout_s: int = 20
+    # Ollama unloads an idle model after 5 min by default. A real outage on 2026-10-08 hit a
+    # cold load on battery and timed out at 20 s. -1 keeps the model in RAM (~3.9 GB).
+    model_keep_alive: int | str = -1
     ollama_url: str = "http://localhost:11434"
     gen_litres_per_hour: float | None = 1.0
     petrol_price_ngn: float | None = 1500

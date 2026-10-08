@@ -30,3 +30,15 @@ def test_retry_hint_names_numbers_and_length():
 def test_prompt_has_facts_and_retry():
     p = writer.build_prompt(VIEW, "Do not use 3 hours.")
     assert "walk" in p and "dry daylight" in p and "Do not use 3 hours." in p
+
+
+def test_write_and_warm_up_ask_ollama_to_keep_model_loaded():
+    seen = []
+
+    def post(url, body, timeout):
+        seen.append(body)
+        return {"response": "Abeg close am."}
+    cfg = Config()
+    writer.write(VIEW, cfg, post=post)
+    writer.warm_up(cfg, post=post)
+    assert [b["keep_alive"] for b in seen] == [-1, -1]

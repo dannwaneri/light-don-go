@@ -47,6 +47,7 @@ def write(view, cfg, retry="", post=_post):
         "prompt": build_prompt(view, retry),
         "stream": False,
         "think": False,
+        "keep_alive": cfg.model_keep_alive,
         "options": {"temperature": 0.7, "num_predict": 60},
     }
     try:
@@ -64,7 +65,7 @@ def warm_up(cfg, post=_post):
     try:
         post(f"{cfg.ollama_url}/api/generate",
              {"model": cfg.model, "prompt": "ok", "stream": False, "think": False,
-              "options": {"num_predict": 1}}, 120)
+              "keep_alive": cfg.model_keep_alive, "options": {"num_predict": 1}}, 120)
         return True
     except Exception:
         return False
