@@ -1,0 +1,11 @@
+Write ONE short sentence, 20 words or fewer, in Nigerian English with a light Pidgin flavour.
+It tells a friend to close the laptop and do this, right now: {activity}.
+Situation outside: {situation}.
+Rules:
+- No numbers, no times, no money.
+- Do not mention NEPA, light, power, electricity, generator or gen. Another line already says that.
+- Write only the sentence. No quotes, nothing after it.
+Good examples (different activities):
+Abeg shut that laptop, go sit for veranda and enjoy small breeze.
+Oya close am, waka go greet the neighbours before dem go inside.
+{retry}

@@ -1,0 +1,25 @@
+[project]
+name = "light-don-go"
+version = "0.1.0"
+description = "When NEPA takes light, a local Gemma tells you to go outside before you on the gen."
+requires-python = ">=3.11"
+dependencies = ["psutil>=5.9"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+ldg = "light_don_go.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["light_don_go"]
+
+[tool.setuptools.package-data]
+light_don_go = ["prompt.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

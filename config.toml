@@ -1,0 +1,18 @@
+# Light don go — local config. Every number the message can use comes from here or from rules.
+lat = 4.8156
+lon = 7.0498
+place_name = "Port Harcourt"
+utc_offset_h = 1          # WAT, no daylight saving
+
+debounce_s = 30           # shorter drop = flicker
+cooldown_min = 15         # no second nudge inside this window
+poll_s = 5
+refresh_min = 30          # forecast refresh while on mains
+
+model = "gemma4:e2b-it-qat"
+model_timeout_s = 20
+ollama_url = "http://localhost:11434"
+
+# Fuel line. Remove either value to drop the fuel line from the message.
+gen_litres_per_hour = 1.0
+petrol_price_ngn = 1500
