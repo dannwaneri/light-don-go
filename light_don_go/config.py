@@ -25,6 +25,8 @@ class Config:
     # cold load on battery and timed out at 20 s. -1 keeps the model in RAM (~3.9 GB).
     model_keep_alive: int | str = -1
     ollama_url: str = "http://localhost:11434"
+    takeover: bool = True          # full-screen page on an outage; toast if False
+    stretch_s: int = 60
     gen_litres_per_hour: float | None = 1.0
     petrol_price_ngn: float | None = 1500
 

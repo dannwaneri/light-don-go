@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Light don go</title>
+<style>
+  /* Offline page: no web fonts, no CDN. The router is off when this opens. */
+  :root {
+    --sky-top: #f6b26b; --sky-bottom: #ffe3b3;
+    --ink: #1f1a14; --ink-soft: #5b4a36;
+    --grass-1: #2f7d32; --grass-2: #3f9a3c; --grass-3: #58b84a;
+    --accent: #c0392b; --card: rgba(255,255,255,0.72); --ring: #2f7d32;
+  }
+  body[data-situation="raining now"] {
+    --sky-top: #5f6b78; --sky-bottom: #9aa6b2; --ink: #0f1419; --ink-soft: #2c3640;
+    --grass-1: #24562a; --grass-2: #2f6b33; --grass-3: #3f7f40; --card: rgba(255,255,255,0.6);
+  }
+  body[data-situation="after dark"] {
+    --sky-top: #0b1026; --sky-bottom: #26305c; --ink: #f4f1e8; --ink-soft: #c9c3b3;
+    --grass-1: #0f2a14; --grass-2: #16361b; --grass-3: #1f4724; --card: rgba(10,14,35,0.6);
+    --accent: #ffcf5c; --ring: #ffcf5c;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    background: linear-gradient(var(--sky-top), var(--sky-bottom));
+    color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    overflow-x: hidden; overflow-y: auto;
+    cursor: default;
+  }
+  main {
+    position: relative; z-index: 2;
+    min-height: 100%;
+    display: grid; place-items: center;
+    padding: 3vh 16px 20vh;
+  }
+  .card {
+    width: min(920px, 100%);
+    background: var(--card);
+    backdrop-filter: blur(6px);
+    border-radius: 28px;
+    padding: clamp(18px, min(4vw, 4vh), 44px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  }
+  .kicker {
+    font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); font-size: clamp(14px, 1.6vw, 18px);
+  }
+  .facts { margin-top: 10px; font-size: clamp(16px, 2vw, 22px); color: var(--ink-soft); line-height: 1.45; }
+  .nudge {
+    margin-top: 18px; font-weight: 800; line-height: 1.12;
+    font-size: clamp(24px, min(5vw, 6.5vh), 60px); text-wrap: balance;
+  }
+  .stretch { margin-top: clamp(12px, 3vh, 28px); display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+  .ring { width: clamp(80px, 13vh, 120px); height: clamp(80px, 13vh, 120px); }
+  .ring circle { fill: none; stroke-width: 10; }
+  .ring .track { stroke: rgba(0,0,0,0.12); }
+  body[data-situation="after dark"] .ring .track { stroke: rgba(255,255,255,0.15); }
+  .ring .bar { stroke: var(--ring); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%;
+               transition: stroke-dashoffset 1s linear; }
+  .ring text { fill: var(--ink); font-size: 30px; font-weight: 800; text-anchor: middle; dominant-baseline: central; }
+  .steps { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .steps li { font-size: clamp(14px, min(2vw, 2.6vh), 21px); color: var(--ink-soft); transition: color .3s, transform .3s; }
+  .steps li.now { color: var(--ink); font-weight: 700; transform: translateX(6px); }
+  .steps li.now::before { content: "→ "; color: var(--accent); }
+  .footer { margin-top: clamp(12px, 3vh, 30px); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+  .praise { font-size: clamp(20px, 2.6vw, 30px); font-weight: 800; opacity: 0; transition: opacity .6s; }
+  .praise.show { opacity: 1; }
+  button {
+    font: inherit; font-weight: 700; font-size: 18px;
+    padding: 14px 26px; border-radius: 999px; border: 0;
+    background: var(--ink); color: var(--sky-bottom); cursor: pointer;
+  }
+  body[data-situation="after dark"] button { background: var(--accent); color: #0b1026; }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .meta { margin-top: 14px; font-size: 14px; color: var(--ink-soft); }
+  .warn { color: var(--accent); font-weight: 700; }
+
+  #grass { position: fixed; left: 0; bottom: 0; width: 100%; height: 26vh; z-index: 1; pointer-events: none; }
+  .blade { transform-origin: bottom center; animation: sway var(--d) ease-in-out infinite alternate; }
+  @keyframes sway { from { transform: rotate(calc(var(--a) * -1)); } to { transform: rotate(var(--a)); } }
+  #weather { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .drop { position: absolute; top: -10vh; width: 2px; height: 9vh; background: rgba(255,255,255,0.45);
+          animation: fall var(--d) linear infinite; }
+  @keyframes fall { to { transform: translateY(125vh); } }
+  .star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff;
+          animation: twinkle var(--d) ease-in-out infinite alternate; }
+  @keyframes twinkle { from { opacity: .2; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .blade, .drop, .star { animation: none; }
+  }
+  @media (max-width: 560px) {
+    .stretch { grid-template-columns: 1fr; justify-items: start; }
+  }
+</style>
+</head>
+<body data-situation="dry daylight">
+<div id="weather" aria-hidden="true"></div>
+<main>
+  <section class="card" role="alertdialog" aria-labelledby="nudge" aria-describedby="facts">
+    <div class="kicker">Light don go</div>
+    <p class="facts" id="facts"></p>
+    <h1 class="nudge" id="nudge"></h1>
+
+    <div class="stretch">
+      <svg class="ring" viewBox="0 0 120 120" role="img" aria-label="Stretch timer">
+        <circle class="track" cx="60" cy="60" r="50"/>
+        <circle class="bar" id="bar" cx="60" cy="60" r="50"/>
+        <text x="60" y="62" id="secs">60</text>
+      </svg>
+      <ol class="steps" id="steps">
+        <li>Stand up from that chair</li>
+        <li>Reach your two hands up, high high</li>
+        <li>Roll your shoulders back, slowly</li>
+        <li>Touch your toes, or try</li>
+        <li>Now go outside</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      <div class="praise" id="praise">You self don try. 🌱</div>
+      <button id="done" type="button">I don stand up. Close am.</button>
+    </div>
+    <p class="meta" id="meta"></p>
+  </section>
+</main>
+<svg id="grass" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+<script>
+  const DATA = /*__DATA__*/{"situation":"dry daylight","facts_line":"Light don go. Sun go set 18:21: you get 75 minutes. Hold the gen: ₦1,500 saved every hour e rest.","nudge":"Abeg shut that laptop, go walk to the junction buy roasted plantain and fish now.","close_line":"Close the laptop. Go outside.","battery_pct":63,"low_battery":false,"stretch_s":60};
+
+  document.body.dataset.situation = DATA.situation;
+  document.getElementById("facts").textContent = DATA.facts_line;
+  document.getElementById("nudge").textContent = DATA.nudge;
+  const meta = document.getElementById("meta");
+  meta.textContent = DATA.close_line + " Battery " + DATA.battery_pct + "%.";
+  const hint = document.createElement("span");
+  hint.textContent = "  (Esc or Alt+F4 also closes this.)";
+  hint.style.opacity = "0.7";
+  if (DATA.low_battery) {
+    const w = document.createElement("span");
+    w.className = "warn";
+    w.textContent = " Sleep the laptop now.";
+    meta.appendChild(w);
+  }
+  meta.appendChild(hint);
+  if (DATA.situation === "raining now") {
+    document.querySelector("#steps li:last-child").textContent = "Now rest your eyes, screen down";
+  }
+
+  // Grass: a few hundred SVG blades, each swaying on its own timing.
+  const g = document.getElementById("grass");
+  const W = 1000, H = 300;
+  g.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const shades = ["--grass-1", "--grass-2", "--grass-3"].map(v => getComputedStyle(document.body).getPropertyValue(v).trim());
+  let blades = "";
+  for (let i = 0; i < 320; i++) {
+    const x = Math.random() * W, h = 90 + Math.random() * 190, w = 6 + Math.random() * 8;
+    const lean = (Math.random() - 0.5) * 40;
+    const c = shades[i % 3];
+    blades += `<path class="blade" style="--d:${(2 + Math.random() * 3).toFixed(2)}s;--a:${(2 + Math.random() * 4).toFixed(1)}deg;transform-box:fill-box"
+      d="M${x - w / 2},${H} Q${x + lean / 2},${H - h / 2} ${x + lean},${H - h} Q${x + lean / 2 + 2},${H - h / 2} ${x + w / 2},${H} Z" fill="${c}"/>`;
+  }
+  g.innerHTML = blades;
+
+  // Sky: rain or stars.
+  const sky = document.getElementById("weather");
+  if (DATA.situation === "raining now") {
+    for (let i = 0; i < 90; i++) {
+      const d = document.createElement("div");
+      d.className = "drop";
+      d.style.left = Math.random() * 100 + "vw";
+      d.style.setProperty("--d", (0.5 + Math.random() * 0.5).toFixed(2) + "s");
+      d.style.animationDelay = (-Math.random()) + "s";
+      sky.appendChild(d);
+    }
+  } else if (DATA.situation === "after dark") {
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement("div");
+      s.className = "star";
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.top = Math.random() * 60 + "vh";
+      s.style.setProperty("--d", (1 + Math.random() * 3).toFixed(2) + "s");
+      sky.appendChild(s);
+    }
+  }
+
+  // Stretch timer: steps advance across the countdown.
+  const total = DATA.stretch_s, bar = document.getElementById("bar"), secs = document.getElementById("secs");
+  const C = 2 * Math.PI * 50;
+  bar.style.strokeDasharray = C;
+  bar.style.strokeDashoffset = 0;
+  const steps = [...document.querySelectorAll("#steps li")];
+  let left = total;
+  function tick() {
+    secs.textContent = left;
+    bar.style.strokeDashoffset = C * (1 - left / total);
+    const idx = Math.min(steps.length - 1, Math.floor((total - left) / (total / steps.length)));
+    steps.forEach((li, i) => li.classList.toggle("now", i === idx));
+    if (left === 0) { document.getElementById("praise").classList.add("show"); return; }
+    left -= 1;
+    setTimeout(tick, 1000);
+  }
+  tick();
+
+  function close() {
+    document.getElementById("praise").classList.add("show");
+    setTimeout(() => { window.close(); }, 700);
+  }
+  document.getElementById("done").addEventListener("click", close);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+  document.getElementById("done").focus();
+</script>
+</body>
+</html>

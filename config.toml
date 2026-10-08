@@ -13,6 +13,8 @@ model = "gemma4:e2b-it-qat"
 model_timeout_s = 20
 model_keep_alive = -1     # keep Gemma in RAM (~3.9 GB); Ollama's 5 min default caused a cold-load timeout
 ollama_url = "http://localhost:11434"
+takeover = true           # full-screen "go outside" page on an outage (toast if false)
+stretch_s = 60
 
 # Fuel line. Remove either value to drop the fuel line from the message.
 gen_litres_per_hour = 1.0

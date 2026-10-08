@@ -19,7 +19,7 @@ build-backend = "setuptools.build_meta"
 packages = ["light_don_go"]
 
 [tool.setuptools.package-data]
-light_don_go = ["prompt.txt"]
+light_don_go = ["prompt.txt", "takeover.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

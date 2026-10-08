@@ -127,3 +127,16 @@ def test_log_row_is_json(cfg, tmp_path):
     log.append(rec, tmp_path / "l.jsonl")
     row = json.loads((tmp_path / "l.jsonl").read_text(encoding="utf-8"))
     assert row["kind"] == "simulated" and row["facts"]["battery_pct"] == 41
+
+
+def test_takeover_page_has_data_and_cannot_be_broken_by_model_text(cfg, tmp_path):
+    from light_don_go import display
+    evil = "Abeg close am </script><script>alert(1)</script>"
+    rec = run.handle_outage(make_facts(battery=12), cfg, 1, write=FakeWriter([evil, evil]))
+    rec["final"] = evil
+    display.takeover(rec, out=tmp_path / "t.html", launch=False)
+    html = (tmp_path / "t.html").read_text(encoding="utf-8")
+    assert "</script><script>alert(1)" not in html
+    assert r"<\/script>" in html and '"low_battery": true' in html
+    assert "/*__DATA__*/" not in html and "const DATA = {" in html
+    assert '"situation": "dry daylight"' in html

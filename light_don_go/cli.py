@@ -31,7 +31,11 @@ def cmd_simulate(cfg, args):
     rec = run.handle_outage(f, cfg, outage_id, write=write)
     rec.update(kind="simulated", start=now_utc)
     log.append(rec, LOG)
-    display.show(rec["message"], use_toast=not args.no_toast)
+    if args.takeover and cfg.takeover:
+        display.show(rec["message"], use_toast=False)
+        display.takeover(rec, stretch_s=cfg.stretch_s)
+    else:
+        display.show(rec["message"], use_toast=not args.no_toast)
     print(f"source={rec['source']} guard={rec['guard']} attempts={len(rec['attempts'])} "
           f"forecast={'ok' if f.forecast_ok else 'none'}")
     for a in rec["attempts"]:
@@ -67,7 +71,10 @@ def cmd_watch(cfg, args):
                     deb.update(True, time.monotonic())
                 else:
                     rec.update(kind="outage", start=now_utc)
-                    display.show(rec["message"], use_toast=not args.no_toast)
+                    use_page = cfg.takeover and not args.no_takeover
+                    display.show(rec["message"], use_toast=not args.no_toast and not use_page)
+                    if use_page and not display.takeover(rec, stretch_s=cfg.stretch_s):
+                        display.toast("Light don go", rec["message"])
                 log.append(rec, LOG)
             elif ev in ("flicker", "outage_quiet", "power_back"):
                 log.append({"kind": ev, "at": now_utc, "battery_pct": p["pct"],
@@ -84,6 +91,7 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     w = sub.add_parser("watch", help="watch power and nudge on a real outage")
     w.add_argument("--no-toast", action="store_true")
+    w.add_argument("--no-takeover", action="store_true", help="toast only, no full-screen page")
     s = sub.add_parser("simulate", help="run the full flow for a given time and battery")
     s.add_argument("--at", required=True, help="local time HH:MM")
     s.add_argument("--battery", type=int, required=True)
@@ -91,6 +99,7 @@ def main(argv=None):
     s.add_argument("--forecast", help="forecast cache file (default cache/forecast.json)")
     s.add_argument("--no-model", action="store_true")
     s.add_argument("--no-toast", action="store_true")
+    s.add_argument("--takeover", action="store_true", help="also open the full-screen page")
     sub.add_parser("refresh", help="save the forecast now")
     args = ap.parse_args(argv)
     try:
