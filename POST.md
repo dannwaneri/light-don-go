@@ -52,6 +52,7 @@ Real outages so far, from `logs/outages.jsonl` (8 October 2026, WAT):
 | 12:25 | Power back after 123 s | Logged (the gen) |
 | 12:31 | NEPA cut again | Gemma: *"Abeg shut that laptop, waka go stand by the window stretch back and legs, rain dey down."* Passed the guard first try |
 | 12:34 | Power back after 225 s | Logged |
+| 12:53 | NEPA cut | First cut with the full-screen page. Gemma: *"Abeg shut that laptop, walk to the kiosk for cold mineral and come back quick."* Passed first try. Facts line: rain around 15:00, about 2 hours left |
 
 The first real outage found a bug. More on that below.
 
