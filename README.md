@@ -6,6 +6,19 @@ When NEPA takes light, and before anyone starts the generator, your laptop tells
 - **Works with the router dead:** the forecast is saved while power is on; after the cut nothing touches the network.
 - **Code decides, Gemma phrases:** rules compute sunset (NOAA formula, offline), the dry window and ₦ saved, and write the facts line. A local open-weight Gemma writes only the nudge, and a guard rejects it if it has any number, more than 20 words, or mentions light/the generator. One retry, then a fixed sentence.
 
+**Words you may not know** (Nigerian English and Pidgin):
+
+| Word | Meaning |
+|---|---|
+| NEPA | What Nigerians still call the power company (the old National Electric Power Authority). "NEPA takes light" means the grid power goes off. |
+| Light don go | "The power is gone." |
+| Gen, "on the gen" | The petrol generator most homes start by hand when the grid fails. "On the gen" means start it. |
+| Hold the gen | Keep the generator off. "₦1,500 saved every hour e rest" means each hour it stays off saves ₦1,500 of petrol. |
+| Abeg · waka · close am · fit | Please · walk · close it · may ("rain fit start" = rain may start) |
+| You self don try | "You have done well." |
+| Mineral · kiosk · junction | Soft drink · small roadside shop · the street corner where food sellers sit |
+| WAT | West Africa Time, UTC+1 |
+
 ```
 Light don go. Rain fit start around 17:00: you get 110 minutes. Hold the gen: ₦1,500 saved every hour e rest.
 Abeg shut that laptop, go walk to the junction buy roasted plantain and fish now.

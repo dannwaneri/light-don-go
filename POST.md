@@ -31,6 +31,19 @@ The page works with no internet, because the router is already off: it uses no w
 
 It is for anyone who works from a laptop where the power cuts are routine: Nigeria, load-shedding in South Africa, a lot of India and Pakistan. You don't need to explain the problem to any of them.
 
+**Words you may not know** (Nigerian English and Pidgin):
+
+| Word | Meaning |
+|---|---|
+| NEPA | What Nigerians still call the power company (the old National Electric Power Authority). "NEPA takes light" means the grid power goes off. |
+| Light don go | "The power is gone." |
+| Gen, "on the gen" | The petrol generator most homes start by hand when the grid fails. "On the gen" means start it. |
+| Hold the gen | Keep the generator off. "₦1,500 saved every hour e rest" means each hour it stays off saves ₦1,500 of petrol. |
+| Abeg · waka · close am · fit | Please · walk · close it · may ("rain fit start" = rain may start) |
+| You self don try | "You have done well." |
+| Mineral · kiosk · junction | Soft drink · small roadside shop · the street corner where food sellers sit |
+| WAT | West Africa Time, UTC+1 |
+
 ## Demo
 
 {% youtube Zr-YILDu6JI %}
