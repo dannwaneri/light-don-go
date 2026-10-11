@@ -99,8 +99,6 @@ So the defaults broke the one promise the tool makes, which is to work when the 
 
 **Tests.** There are 98 tests, including one that blocks every network socket and still runs the outage path to the end. I also broke the guard on purpose 8 times (wider tolerances, checks removed), and a test failed every time.
 
-I built this with Claude Code. The design decisions, the field test and the walk are mine.
-
 ## Why Does Open Innovation Matter?
 
 Because the network dies with the light.
