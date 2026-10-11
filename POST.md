@@ -1,5 +1,5 @@
 ---
-title: When NEPA takes light, my laptop tells me to go outside before I on the gen
+title: '"Light don go": when Nigeria''s power cuts out, my laptop sends me outside'
 published: false
 tags: devchallenge, hf26challenge, gemma, opensource
 cover_image: https://raw.githubusercontent.com/dannwaneri/light-don-go/main/docs/screenshots/takeover-rain.png
