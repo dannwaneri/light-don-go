@@ -5,17 +5,13 @@ tags: devchallenge, hf26challenge, gemma, opensource
 cover_image: https://raw.githubusercontent.com/dannwaneri/light-don-go/main/docs/screenshots/takeover-rain.png
 ---
 
-<!-- DRAFT by Claude from the repo, the logs and this session. Every [DANIEL: ...] needs your own words.
-     Rewrite anything that doesn't sound like you. Numbers below are from logs/outages.jsonl and the README.
-     Images load from raw.githubusercontent.com, so docs/screenshots/ must be pushed before you publish. -->
-
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 1: Touch Grass](https://dev.to/challenges/hacktoberfest-week1-2026-10-05)*
 
 ## What I Built
 
 In Port Harcourt, the light goes and the room changes in about two seconds. The fan stops. The router dies. The laptop drops to battery. Then somebody shouts "on the gen!"
 
-[DANIEL: one or two lines of your own. What you usually do in that gap. Phone on mobile data? Sweating at the desk until the gen comes on?]
+I used to just sit there. Phone on mobile data, laptop on battery, waiting for the gen to come on so I could keep working.
 
 That gap, between NEPA taking light and someone starting the generator, is the one moment in my day when the screen is already losing. **Light don go** uses it. When my laptop switches to battery for more than 30 seconds, a full-screen page opens on top of whatever I'm doing:
 
@@ -37,14 +33,11 @@ It is for anyone who works from a laptop where the power cuts are routine: Niger
 
 ## Demo
 
-[DANIEL: video or GIF. Suggested 60-90 s cut:
- 1. `ldg watch` running, charger in.
- 2. Pull the charger. Wait about 35 s (speed up the wait).
- 3. The full-screen page takes over. Let the stretch timer run a few seconds, press the button, close the lid.
- 4. Cut to the real log rows below.
- For a clean take: `ldg simulate --at 15:10 --battery 63 --forecast tests/fixtures/demo_dry_then_rain.json --takeover`.]
+{% youtube Zr-YILDu6JI %}
 
-Real outages so far, from `logs/outages.jsonl` (8 October 2026, WAT):
+Watch on YouTube: https://youtu.be/Zr-YILDu6JI
+
+Real outages so far, from `logs/outages.jsonl` (8 and 9 October 2026, WAT):
 
 | Time | Event | What the tool did |
 |---|---|---|
@@ -53,6 +46,10 @@ Real outages so far, from `logs/outages.jsonl` (8 October 2026, WAT):
 | 12:31 | NEPA cut again | Gemma: *"Abeg shut that laptop, waka go stand by the window stretch back and legs, rain dey down."* Passed the guard first try |
 | 12:34 | Power back after 225 s | Logged |
 | 12:53 | NEPA cut | First cut with the full-screen page. Gemma: *"Abeg shut that laptop, walk to the kiosk for cold mineral and come back quick."* Passed first try. Facts line: rain around 15:00, about 2 hours left |
+| 13:34 | NEPA cut, laptop asleep | Timed out, fallback logged. The Windows event log shows the laptop was in Modern Standby: it woke for a moment at the cut, went back to sleep mid-call, and woke again at 13:56. The model was still loaded. Nobody was at the screen |
+| 9 Oct, 07:33 | NEPA cut | Gemma: *"Abeg shut that laptop, walk to the kiosk find cold mineral and come back quick."* Passed first try |
+
+**What I did when it told me to go.** I closed my laptop, took a walk outside in my neighbourhood in Port Harcourt, visited my cousins and played with their children. That was the 07:33 cut on 9 October. The light came back at about 12:05.
 
 The first real outage found a bug. More on that below.
 
@@ -92,17 +89,17 @@ So I split the job:
 
 After the split, 9 of 9 test runs passed first time, with no meaning errors that I saw.
 
-[DANIEL: link to your VES benchmark post here if it's live. Same pattern: models catch a wrong label when asked, then copy it into a routine note. Small models are fine at tone and unreliable at facts, so don't hand them the facts.]
-
 **What the guard can't do.** It checks numbers and topic, not sense. In one test run Gemma wrote "watch the rain inside the phone", and it passed. A bigger model would make fewer sentences like that, but it would not run on this laptop. I chose the small model, and I accept that one of its sentences will sometimes be odd.
 
-**The bug a real outage found.** At 12:23 the light went, the tool caught it, and Gemma timed out. I measured before changing anything. `ollama ps` showed that the model had just been loaded, by the request that failed. Ollama unloads an idle model after 5 minutes. My warm-up had run at 11:53, so at 12:23 the tool hit a cold start, on battery, and took more than 20 s. The fix is one setting: `keep_alive: -1`, which keeps Gemma in RAM (3.9 GB of my 15.7). At the next cut, at 12:31, Gemma answered first time.
+**The bug a real outage found.** At 12:23 the light went, the tool caught it, and Gemma timed out. I measured before changing anything. `ollama ps` showed that the model had just been loaded, by the request that failed. Ollama unloads an idle model after 5 minutes. My warm-up had run at 11:53, so at 12:23 the tool hit a cold start, on battery, and took more than 20 s. The fix is one setting: `keep_alive: -1`, which keeps Gemma in RAM (3.9 GB of my 15.7). At the next cut, at 12:31, Gemma answered first time. One later cut, at 13:34, also timed out, but the cause was different: the laptop was asleep (Windows Modern Standby). I checked the event log before blaming the fix.
 
 So the defaults broke the one promise the tool makes, which is to work when the light goes. I would not have found that in a simulation.
 
 **The page.** One HTML file with the outage data written in as JSON. Edge opens it with `--app --start-fullscreen`, so there is no address bar and no tabs. The model's sentence goes in as data and is never inserted as HTML. A test feeds it a nudge containing `</script>` and checks that the page does not break.
 
 **Tests.** There are 98 tests, including one that blocks every network socket and still runs the outage path to the end. I also broke the guard on purpose 8 times (wider tolerances, checks removed), and a test failed every time.
+
+I built this with Claude Code. The design decisions, the field test and the walk are mine.
 
 ## Why Does Open Innovation Matter?
 
@@ -112,12 +109,8 @@ When NEPA takes light, my router is off until someone starts the gen. A cloud AP
 
 It also costs nothing per outage, which matters when outages happen every day. And because Ollama and the model are open, I could see why the first real call failed: an idle model unloads after 5 minutes, and I could change that setting. With a closed API, a timeout is just a timeout.
 
-## My Agent Session
-
-[DANIEL: decide. This was built with Claude Code (spec, code, tests, the timing test, the bug diagnosis). Either embed the DevRelay session or say so plainly here in one line. About 30 entries already embed one.]
-
 ## Prize Categories
 
 - **Best Use of Gemma.** Gemma 4 E2B (QAT) runs locally through Ollama, offline, on a CPU-only laptop. It is the only part of the system that writes text, and the guard limits it to what a small model does well.
 
-[DANIEL: closing line in your voice, or cut this.]
+The tool's best result so far isn't in the logs. It's a morning with my cousins' children that I would have spent waiting for the gen.
